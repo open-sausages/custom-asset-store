@@ -2,20 +2,36 @@
     "name": "silverstripe/custom-asset-store",
     "description": "Example of a custom asset store that redirect old hash URL to the latest version.",
     "type": "silverstripe-vendormodule",
-    "license": "BSD",
+    "homepage": "http://silverstripe.org",
+    "license": "BSD-3-Clause",
+    "keywords": [
+        "silverstripe",
+        "assets"
+    ],
     "authors": [
         {
-            "name": "Maxime Rainville",
-            "email": "maxime@silverstripe.com"
+            "name": "SilverStripe",
+            "homepage": "http://silverstripe.com"
+        },
+        {
+            "name": "The SilverStripe Community",
+            "homepage": "http://silverstripe.org"
         }
     ],
-    "minimum-stability": "dev",
     "require": {
-        "silverstripe/assets": "^1"
+        "silverstripe/assets": "^1",
+        "silverstripe/framework": "^4",
+        "silverstripe/versioned": "^1"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^5.7",
     },
     "autoload": {
         "psr-4": {
-            "SilverStripe\\CustomAssetsStore\\": "src/"
+            "SilverStripe\\CustomAssetsStore\\": "src/",
+            "SilverStripe\\CustomAssetsStore\\Tests\\": "tests/"
         }
-    }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
 }
