@@ -6,7 +6,7 @@ After:
 SilverStripe\Core\Injector\Injector:
   # Define our SS asset backend
   SilverStripe\Assets\Storage\AssetStore:
-    class: CustomAssetStore
+    class: SilverStripe\CustomAssetsStore\CustomAssetStore
     properties:
       PublicFilesystem: '%$League\Flysystem\Filesystem.public'
       ProtectedFilesystem: '%$League\Flysystem\Filesystem.protected'
