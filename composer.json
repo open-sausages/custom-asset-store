@@ -24,12 +24,12 @@
         "silverstripe/versioned": "^1"
     },
     "require-dev": {
-        "phpunit/phpunit": "^5.7",
+        "phpunit/phpunit": "^5.7"
     },
     "autoload": {
         "psr-4": {
             "SilverStripe\\CustomAssetsStore\\": "src/",
-            "SilverStripe\\CustomAssetsStore\\Tests\\": "tests/"
+            "SilverStripe\\CustomAssetsStore\\Tests\\": "tests/php/"
         }
     },
     "minimum-stability": "dev",
