@@ -1,0 +1,21 @@
+{
+    "name": "silverstripe/custom-asset-store",
+    "description": "Example of a custom asset store that redirect old hash URL to the latest version.",
+    "type": "silverstripe-vendormodule",
+    "license": "BSD",
+    "authors": [
+        {
+            "name": "Maxime Rainville",
+            "email": "maxime@silverstripe.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "silverstripe/assets": "^1"
+    },
+    "autoload": {
+        "psr-4": {
+            "SilverStripe\\CustomAssetsStore": "src/"
+        }
+    }
+}
