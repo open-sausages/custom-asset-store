@@ -3,6 +3,7 @@ namespace SilverStripe\CustomAssetsStore;
 
 use SilverStripe\Assets\File;
 use SilverStripe\Assets\Flysystem\FlysystemAssetStore;
+use SilverStripe\ORM\DB;
 use SilverStripe\Security\Security;
 use SilverStripe\Versioned\Versioned;
 
@@ -29,8 +30,7 @@ class CustomAssetStore extends FlysystemAssetStore {
             if ($file) {
                 $archivedFile = $file->allVersions(
                     [
-                        // There's SQL Injection risk here because parseFileID won't match invalid hashes
-                        ['FileHash like ?' => $parsedFileID['Hash'] . '%'],
+                        ['FileHash like ?' => DB::get_conn()->escapeString($parsedFileID['Hash']) . '%'],
                         'WasPublished' => true
                     ],
                     ['ID' => 'Desc'], 1
