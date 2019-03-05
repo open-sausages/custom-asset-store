@@ -13,7 +13,8 @@ use SilverStripe\Versioned\Versioned;
  *
  * The latest published version of the file will be return to the browser.
  */
-class CustomAssetStore extends FlysystemAssetStore {
+class CustomAssetStore extends FlysystemAssetStore
+{
 
     public function getResponseFor($asset)
     {
@@ -40,7 +41,7 @@ class CustomAssetStore extends FlysystemAssetStore {
      */
     protected function rewriteToLatestLiveUrl($parsedFileID)
     {
-        $file = Versioned::withVersionedMode(function() use ($parsedFileID) {
+        $file = Versioned::withVersionedMode(function () use ($parsedFileID) {
             Versioned::set_stage(Versioned::LIVE);
             return File::get()->filter(['FileFilename' => $parsedFileID['Filename']])->first();
         });
@@ -52,7 +53,8 @@ class CustomAssetStore extends FlysystemAssetStore {
                     ['FileHash like ?' => DB::get_conn()->escapeString($parsedFileID['Hash']) . '%'],
                     'WasPublished' => true
                 ],
-                ['ID' => 'Desc'], 1
+                ['ID' => 'Desc'],
+                1
             )->first();
             // If we found a version that matches our hash, let's return the url to the latest file.
             if ($archivedFile) {
@@ -71,7 +73,7 @@ class CustomAssetStore extends FlysystemAssetStore {
     protected function rewriteLegacyUrl($asset)
     {
         // Let's try to match the plain file name
-        $file = Versioned::withVersionedMode(function() use ($asset) {
+        $file = Versioned::withVersionedMode(function () use ($asset) {
             Versioned::set_stage(Versioned::LIVE);
             return File::get()->filter(['FileFilename' => $asset])->first();
         });
@@ -106,8 +108,7 @@ class CustomAssetStore extends FlysystemAssetStore {
         return [
             'Filename' => $filename,
             'Variant' => $variant,
-            'Hash' =>  isset($matches['hash']) ? $matches['hash'] : '' 
+            'Hash' =>  isset($matches['hash']) ? $matches['hash'] : ''
         ];
     }
-
 }

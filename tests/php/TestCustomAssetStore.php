@@ -154,5 +154,4 @@ class TestCustomAssetStore extends CustomAssetStore implements TestOnly
         $adapter = $filesystem->getAdapter();
         return $adapter->applyPathPrefix($fileID);
     }
-
 }

@@ -180,7 +180,6 @@ class CustomAssetsStoreTest extends SapphireTest
             'fILEtEST-SUBFOLDER/fILEtESTsUBFOLDER.TXT - version 2',
             $response->getBody()
         );
-
     }
 
     public function testArchivedFile()
@@ -197,16 +196,19 @@ class CustomAssetsStoreTest extends SapphireTest
 
         // Legacy URL
         $response = $this->getStore()->getResponseFor("FileTest-subfolder/FileTestSubfolder.txt");
-        $this->assertEquals(404, $response->getStatusCode(),
+        $this->assertEquals(
+            404,
+            $response->getStatusCode(),
             'Archived file should not return a 404 when access via a legacy URL'
         );
 
         // Granted access
         $this->getStore()->grant('FileTest-subfolder/FileTestSubfolder.txt', $file->getHash());
         $response = $this->getStore()->getResponseFor("FileTest-subfolder/{$hash}/FileTestSubfolder.txt");
-        $this->assertEquals(404, $response->getStatusCode(),
+        $this->assertEquals(
+            404,
+            $response->getStatusCode(),
             'Archived file should not return a 404 even when granted access'
         );
     }
-
 }

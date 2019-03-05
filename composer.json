@@ -33,5 +33,9 @@
         }
     },
     "minimum-stability": "dev",
-    "prefer-stable": true
+    "prefer-stable": true,
+    "scripts": {
+        "lint": "phpcs src/ tests/php/",
+        "lint-clean": "phpcbf src/ tests/php/"
+    }
 }
