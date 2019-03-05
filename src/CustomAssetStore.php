@@ -21,36 +21,64 @@ class CustomAssetStore extends FlysystemAssetStore {
         $file = false;
         $parsedFileID = $this->parseFileID($asset);
 
-        // We skipped this part for authenticated user otherwise, you might not be able to access a protected file
-        if (!Security::getCurrentUser() && $parsedFileID && isset($parsedFileID['Hash'])) {
-            
-            $file = File::get()->filter(['FileFilename' => $parsedFileID['Filename']])->first();
-
-            // If we find a file with the matched Filename, let's look to see if we find a version that matches our Hash
-            if ($file) {
-                $archivedFile = $file->allVersions(
-                    [
-                        ['FileHash like ?' => DB::get_conn()->escapeString($parsedFileID['Hash']) . '%'],
-                        'WasPublished' => true
-                    ],
-                    ['ID' => 'Desc'], 1
-                )->first();
-                // If we found a version that matches our hash, let's return the url to the latest file.
-                if ($archivedFile) {
-                    $asset = $file->File->getSourceURL();
-                    $asset = preg_replace('/^\/?assets\//i', '', $asset);
-                }
+        // We skipped this part if you have been granted access to the file
+        if ($parsedFileID && isset($parsedFileID['Hash'])) {
+            if (!$this->isGranted($asset)) {
+                $asset = $this->rewriteToLatestLiveUrl($parsedFileID) ?: $asset;
             }
         } else {
-            // Let's try to match the plain file name
-            $file = File::get()->filter(['FileFilename' => $asset])->first();
-            if ($file) {
-                $asset = $file->File->getSourceURL();
-                $asset = preg_replace('/^\/?assets\//i', '', $asset);
-            }
+            $asset = $this->rewriteLegacyUrl($asset) ?: $asset;
         }
 
         return parent::getResponseFor($asset);
+    }
+
+    /**
+     * Given a parsed file id, try to find the latest live url for this file.
+     * @param $parsedFileID
+     * @return false|string
+     */
+    protected function rewriteToLatestLiveUrl($parsedFileID)
+    {
+        $file = Versioned::withVersionedMode(function() use ($parsedFileID) {
+            Versioned::set_stage(Versioned::LIVE);
+            return File::get()->filter(['FileFilename' => $parsedFileID['Filename']])->first();
+        });
+
+        // If we find a file with the matched Filename, let's look to see if we find a version that matches our Hash
+        if ($file) {
+            $archivedFile = $file->allVersions(
+                [
+                    ['FileHash like ?' => DB::get_conn()->escapeString($parsedFileID['Hash']) . '%'],
+                    'WasPublished' => true
+                ],
+                ['ID' => 'Desc'], 1
+            )->first();
+            // If we found a version that matches our hash, let's return the url to the latest file.
+            if ($archivedFile) {
+                return $this->getFileID($file->getFilename(), $file->getHash(), $parsedFileID['Variant']);
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Try to map the file path as it would appear in the CMS to an actual file.
+     * @param $asset
+     * @return bool|string
+     */
+    protected function rewriteLegacyUrl($asset)
+    {
+        // Let's try to match the plain file name
+        $file = Versioned::withVersionedMode(function() use ($asset) {
+            Versioned::set_stage(Versioned::LIVE);
+            return File::get()->filter(['FileFilename' => $asset])->first();
+        });
+
+        return $file ?
+            $this->getFileID($file->getFilename(), $file->getHash()) :
+            false;
     }
 
     /**
@@ -81,4 +109,5 @@ class CustomAssetStore extends FlysystemAssetStore {
             'Hash' =>  isset($matches['hash']) ? $matches['hash'] : '' 
         ];
     }
+
 }

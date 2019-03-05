@@ -26,7 +26,7 @@ composer require silverstripe/custom-asset-store
 
 By default, your project SilverStripe 4 will publish files under a URL containing an hash (e.g.: `/assets/Uploads/80864e1046/sam.jpg`). The hash part of the URL is based on the content of the file. If you upload a new version of the file, the hash will change which will change the URL. Direct links to old version of the files will break when this happens.
 
-Also, if you upgraded your site from SilverStripe 3, old links to you file won't work anymore because SS3 didn't have the hash at all.
+Also, if you upgraded your site from SilverStripe 3, old links to your file won't work anymore because SS3 didn't have the hash at all.
 
 ## What does this actually do
 
