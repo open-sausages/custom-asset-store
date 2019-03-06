@@ -211,4 +211,34 @@ class CustomAssetsStoreTest extends SapphireTest
             'Archived file should not return a 404 even when granted access'
         );
     }
+
+    public function testImageVariants()
+    {
+        /** @var Image $file */
+        $file = Image::create();
+        $file->FileFilename = 'doggo.jpg';
+        $file->Name = 'Doogy princess warrior';
+        $file->setFromLocalFile(__DIR__ . '/images/initial.jpg', 'doggo.jpg');
+        $file->write();
+        $file->publishSingle();
+        $variant = $file->ScaleWidth(128)->getVariant();
+
+        $hash = substr($file->getHash(), 0, 10);
+
+        // Normal URL with hash
+        $response = $this->getStore()->getResponseFor("{$hash}/doggo.jpg");
+        $this->assertEquals(200, $response->getStatusCode(), 'File should be accessible when published');
+
+        // Legacy URL
+        $response = $this->getStore()->getResponseFor("doggo.jpg");
+        $this->assertEquals(200, $response->getStatusCode(), 'Legacy URL should be accessible when parent file is published');
+
+        // Variant URL with hash
+        $response = $this->getStore()->getResponseFor("{$hash}/doggo__{$variant}.jpg");
+        $this->assertEquals(200, $response->getStatusCode(), 'File should be accessible when published');
+
+        // Legacy URL
+        $response = $this->getStore()->getResponseFor("doggo__{$variant}.jpg");
+        $this->assertEquals(200, $response->getStatusCode(), 'Legacy URL should be accessible when parent file is published');
+    }
 }

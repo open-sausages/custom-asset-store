@@ -20,7 +20,7 @@ class CustomAssetStore extends FlysystemAssetStore
     {
         /** @var boolean|File $file */
         $file = false;
-        $parsedFileID = $this->parseFileID($asset);
+        $parsedFileID = $this->customParseFileID($asset);
 
         // We skipped this part if you have been granted access to the file
         if ($parsedFileID && isset($parsedFileID['Hash'])) {
@@ -72,15 +72,17 @@ class CustomAssetStore extends FlysystemAssetStore
      */
     protected function rewriteLegacyUrl($asset)
     {
+        $parsedFileID = $this->customParseFileID($asset, true);
+        $filename = $parsedFileID['Filename'];
+        $variant = $parsedFileID['Variant'];
+
         // Let's try to match the plain file name
-        $file = Versioned::withVersionedMode(function () use ($asset) {
+        $file = Versioned::withVersionedMode(function () use ($filename) {
             Versioned::set_stage(Versioned::LIVE);
-            return File::get()->filter(['FileFilename' => $asset])->first();
+            return File::get()->filter(['FileFilename' => $filename])->first();
         });
 
-        return $file ?
-            $this->getFileID($file->getFilename(), $file->getHash()) :
-            false;
+        return $file ? $this->getFileID($filename, $file->getHash(), $variant) : false;
     }
 
     /**
@@ -90,9 +92,9 @@ class CustomAssetStore extends FlysystemAssetStore
      * @param string $fileID
      * @return array
      */
-    protected function parseFileID($fileID)
+    protected function customParseFileID($fileID, $forceLegacyName = false)
     {
-        if ($this->useLegacyFilenames()) {
+        if ($forceLegacyName || $this->useLegacyFilenames()) {
             $pattern = '#^(?<folder>([^/]+/)*)(?<basename>((?<!__)[^/.])+)(__(?<variant>[^.]+))?(?<extension>(\..+)*)$#';
         } else {
             $pattern = '#^(?<folder>([^/]+/)*)(?<hash>[a-zA-Z0-9]{10})/(?<basename>((?<!__)[^/.])+)(__(?<variant>[^.]+))?(?<extension>(\..+)*)$#';
@@ -105,10 +107,11 @@ class CustomAssetStore extends FlysystemAssetStore
 
         $filename = $matches['folder'] . $matches['basename'] . $matches['extension'];
         $variant = isset($matches['variant']) ? $matches['variant'] : null;
+        $hash = isset($matches['hash']) ? $matches['hash'] : null;
         return [
             'Filename' => $filename,
             'Variant' => $variant,
-            'Hash' =>  isset($matches['hash']) ? $matches['hash'] : ''
+            'Hash' => $hash,
         ];
     }
 }
