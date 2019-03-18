@@ -1,3 +1,9 @@
+# IMPORTANT !!! (IN ALL CAPS with 3 exclamation points so you know we mean it)
+
+This module was just a proof of concept. The functionality in this module has been [folded back into `silverstripe/assets`](https://github.com/silverstripe/silverstripe-assets/pull/218).
+
+We will be deleting this module soonish. Do NOT add to your project and remove it if it's already there.
+
 # Silverstripe Custom Asset Store
 
 This is an experimental module that demonstrate how you can customise your asset store to match legacy style URLs or old publish file hashes.
