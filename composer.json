@@ -37,5 +37,6 @@
     "scripts": {
         "lint": "phpcs src/ tests/php/",
         "lint-clean": "phpcbf src/ tests/php/"
-    }
+    },
+    "abandoned": "silverstripe/assets"
 }
